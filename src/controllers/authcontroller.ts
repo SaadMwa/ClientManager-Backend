@@ -14,27 +14,40 @@ export const testAuthFunction = async (req: Request, res: Response) => {
 };
 
 export const registerUser = async (req: Request, res: Response) => {
+
+     console.log('🔵 registerUser STARTED');
+    console.log('📦 Request body:', req.body);
+
     try{
         const {name, email, password} = req.body;
+               console.log('📝 Extracted:', { name, email, password: password ? '***' : 'missing' });
 
         if(!name || !email || !password){
+            console.log('❌ Missing fields');
             return res.status(400).json({message: "All Fields are required"});
         }
 
         const ExistingUser = await User.findOne({email});
         if(ExistingUser){
+             console.log('❌ User already exists');
             return res.status(400).json ({message: "User Already Exists"})
         }
-
+    console.log('🔐 Hashing password...');
         const salt = await bcrypt.genSalt(10);
         const HashedPassword = await bcrypt.hash(password, salt);
-
+ console.log('💾 Creating user...');
         const newUser = await User.create({name, email, password: HashedPassword});
-
+console.log('✅ User created:', newUser._id);
         const userWithoutPassword = await User.findById(newUser._id).select("-password");
+         console.log('🎉 Registration successful');
         return res.status(201).json({message: "User Registered Successfully", user: userWithoutPassword})
     } catch (error: any){
-        console.error("Register error:", error);
+       
+         console.error('💥 REGISTRATION ERROR:', error);
+        console.error('Error name:', error?.name);
+        console.error('Error code:', error?.code);
+        console.error('Error message:', error?.message);
+        
         if (error?.code === 11000) {
             return res.status(400).json({ message: "User Already Exists" });
         }
