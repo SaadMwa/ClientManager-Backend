@@ -5,6 +5,14 @@ import bcrypt from "bcrypt";
 
 
 
+export const testAuthFunction = async (req: Request, res: Response) => {
+    console.log('✅ testAuthFunction called');
+    res.json({ 
+        message: 'Auth controller function is working!',
+        timestamp: new Date().toISOString()
+    });
+};
+
 export const registerUser = async (req: Request, res: Response) => {
     try{
         const {name, email, password} = req.body;
