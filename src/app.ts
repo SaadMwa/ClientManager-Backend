@@ -28,7 +28,7 @@ app.get('/api/ping', (req, res) => {
 app.use(express.json());
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || process.env.CLIENT_URI || "http://localhost:5173",
+    origin:["http://localhost:5173", "https://client-manager-frontend-vwyz.vercel.app"],
     credentials: true,
   })
 );
