@@ -19,6 +19,10 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, "..", ".env") });
 
 const app = express();
+// Add this BEFORE all other routes
+app.get('/api/ping', (req, res) => {
+    res.json({ message: 'pong', timestamp: new Date().toISOString() });
+});
 
 // Middleware
 app.use(express.json());
