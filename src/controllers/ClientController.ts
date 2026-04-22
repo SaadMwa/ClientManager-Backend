@@ -7,12 +7,12 @@ export const createClient = async (req: Request, res: Response) => {
   try {
     const { name, email} = req.body;
     
-    if (!name) {
-      return res.status(400).json({ message: "Name is required" });
+    if (!name || !String(name).trim()) {
+      return res.status(400).json({ message: "Client name is required" });
     }
 
-    if (!email) {
-      return res.status(400).json({ message: "Email is required" });
+    if (!email || !String(email).trim()) {
+      return res.status(400).json({ message: "Client email is required" });
     }
 
     if (!req.user?.id) {
@@ -55,10 +55,11 @@ export const getClients = async(req: any, res: any) => {
     res.json({
       clients,
       total,
-      Page,
+      page: Page,
       pages: Math.ceil(total / limit),
     });
   } catch (error) {
+    console.error("Get clients error:", error);
     res.status(500).json({ message: "Error fetching clients" });
   }
 };
@@ -95,12 +96,12 @@ export const updateClient = async (req: Request, res: Response) => {
     if (!req.user?.id) {
       return res.status(401).json({ message: "User not authenticated" });
     }
-     if (req.body.name === undefined) {
-      return res.status(401).json({ message: "User not authenticated" });
+     if (req.body.name === undefined || !String(req.body.name).trim()) {
+      return res.status(400).json({ message: "Client name is required" });
     }
 
-    if (req.body.email === undefined) {
-      return res.status(401).json({ message: "User not authenticated" });
+    if (req.body.email === undefined || !String(req.body.email).trim()) {
+      return res.status(400).json({ message: "Client email is required" });
     }
     if (!req.params.id) {
       return res.status(400).json({ message: "Client ID is required" });
@@ -163,14 +164,10 @@ export const getDashboardStats = async(req: any, res: any) => {
       return res.status(401).json({ message: "User not authenticated" });
     }
     
-    console.log("Fetching stats for user:", req.user.id);
-    
     // Get total clients
     const totalClients = await Client.countDocuments({
       userId: req.user.id
     });
-
-    console.log("Total clients:", totalClients);
 
     // Get total notes only for active clients to avoid orphaned notes
     const clientIds = await Client.find({ userId: req.user.id }).distinct("_id");
@@ -179,7 +176,6 @@ export const getDashboardStats = async(req: any, res: any) => {
       clientId: { $in: clientIds },
     });
 
-    console.log("Total notes:", totalNotes);
 
     // Get recent clients (last 7 days)
     const oneWeekAgo = new Date();
@@ -190,8 +186,6 @@ export const getDashboardStats = async(req: any, res: any) => {
       createdAt: { $gte: oneWeekAgo },
     });
     
-    console.log("Recent clients:", recentClients);
-
     res.json({
       totalClients,
       totalNotes,

@@ -1,0 +1,1 @@
+{"version":3,"file":"clientModel.d.ts","sourceRoot":"","sources":["../../src/models/clientModel.ts"],"names":[],"mappings":"AAAA,OAAO,QAAQ,EAAE,EAAE,QAAQ,EAAU,MAAM,UAAU,CAAC;AAItD,MAAM,WAAW,OAAQ,SAAQ,QAAQ;IACvC,MAAM,EAAE,MAAM,CAAC;IACf,IAAI,EAAE,MAAM,CAAC;IACb,KAAK,EAAE,MAAM,CAAC;IACd,SAAS,EAAE,IAAI,CAAC;CACjB;;;;;;;;AAwBD,wBAA+D"}

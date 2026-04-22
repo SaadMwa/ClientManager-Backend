@@ -1,0 +1,1 @@
+{"version":3,"file":"insightService.d.ts","sourceRoot":"","sources":["../../src/services/insightService.ts"],"names":[],"mappings":"AAKA,UAAU,OAAO;IACb,EAAE,EAAE,MAAM,CAAC;IACX,IAAI,EAAE,SAAS,GAAG,SAAS,GAAG,MAAM,CAAC;IACrC,OAAO,EAAE,MAAM,CAAC;IAChB,MAAM,EAAE,MAAM,GAAG,IAAI,CAAC;CACzB;AACD,eAAO,MAAM,gBAAgB,GAAU,QAAQ,MAAM,uBAuEpD,CAAC"}
