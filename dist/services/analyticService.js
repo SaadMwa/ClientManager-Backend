@@ -6,16 +6,20 @@ export const getRevenue = async (userId) => {
             $match: {
                 userId,
                 status: "completed",
-                completedAt: { $type: "date", $ne: null },
                 agreedPrice: { $type: "number", $gte: 0 },
+            },
+        },
+        {
+            $addFields: {
+                revenueDate: { $ifNull: ["$completedAt", { $ifNull: ["$updatedAt", "$createdAt"] }] },
             },
         },
         // 2) Group by year/month and sum revenue
         {
             $group: {
                 _id: {
-                    year: { $year: "$completedAt" },
-                    month: { $month: "$completedAt" },
+                    year: { $year: "$revenueDate" },
+                    month: { $month: "$revenueDate" },
                 },
                 revenue: { $sum: "$agreedPrice" },
             },

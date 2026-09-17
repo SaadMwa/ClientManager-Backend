@@ -1,4 +1,4 @@
-import { app, connectToDatabase } from "./app.js";
+import { app, connectToDatabase, disconnectFromDatabase } from "./app.js";
 
 const port = Number(process.env.PORT || 5000);
 
@@ -14,5 +14,18 @@ if (process.env.NODE_ENV !== "test") {
       process.exit(1);
     });
 }
+
+const shutdown = async () => {
+  await disconnectFromDatabase().catch(() => undefined);
+  process.exit(0);
+};
+
+process.once("SIGINT", () => {
+  void shutdown();
+});
+
+process.once("SIGTERM", () => {
+  void shutdown();
+});
 
 export default app;

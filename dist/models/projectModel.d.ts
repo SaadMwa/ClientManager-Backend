@@ -1,17 +1,18 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, Types } from "mongoose";
 export interface IProject extends Document {
     userId: string;
-    clientId: string;
+    clientId: Types.ObjectId;
     name: string;
     estimatedHours: number;
     agreedPrice: number;
     status: "active" | "completed";
+    deadline?: Date | null;
     createdAt: Date;
     updatedAt: Date;
-    completedAt: Date;
+    completedAt?: Date | null;
 }
 declare const _default: mongoose.Model<IProject, {}, {}, {}, mongoose.Document<unknown, {}, IProject, {}, mongoose.DefaultSchemaOptions> & IProject & Required<{
-    _id: mongoose.Types.ObjectId;
+    _id: Types.ObjectId;
 }> & {
     __v: number;
 } & {

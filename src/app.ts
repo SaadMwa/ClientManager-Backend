@@ -11,6 +11,7 @@ import clientRoutes from "./routes/clientroutes.js";
 import projectRoutes from "./routes/projectroutes.js";
 import timeLogRoutes from "./routes/timelogroutes.js";
 import AnalyticsRoutes from "./routes/analytic.js";
+import { getAllowedOrigins, validateEnvironment } from "./config/env.js";
 
 // Ensure .env is loaded even if the server is started from a different CWD
 const __filename = fileURLToPath(import.meta.url);
@@ -18,19 +19,35 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, "..", ".env") });
 
 const app = express();
-// Add this BEFORE all other routes
-app.get('/api/ping', (req, res) => {
-    res.json({ message: 'pong', timestamp: new Date().toISOString() });
+app.disable("x-powered-by");
+
+app.use((_req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Referrer-Policy", "no-referrer");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  if (process.env.NODE_ENV === "production") {
+    res.setHeader("Strict-Transport-Security", "max-age=15552000; includeSubDomains");
+  }
+  next();
+});
+
+app.get("/health", (_req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
+app.get("/api/ping", (_req, res) => {
+  res.json({ message: "pong" });
 });
 
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: "100kb" }));
 app.use((req, _res, next) => {
   const startedAt = Date.now();
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
   req.on("close", () => {
     const elapsed = Date.now() - startedAt;
-    console.log(`[${req.method}] ${req.originalUrl} completed in ${elapsed}ms`);
+    console.log(`[${req.method}] ${req.path} completed in ${elapsed}ms`);
   });
   next();
 });
@@ -58,7 +75,16 @@ app.use((req, res, next) => {
 });
 app.use(
   cors({
-    origin:["http://localhost:5173", "https://client-manager-frontend-vwyz.vercel.app"],
+    origin: (origin, callback) => {
+      const allowedOrigins = getAllowedOrigins();
+      const devOrigins = process.env.NODE_ENV === "production" ? [] : ["http://localhost:5173"];
+      const allowlist = [...allowedOrigins, ...devOrigins];
+
+      if (!origin || allowlist.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Origin is not allowed by CORS"));
+    },
     credentials: true,
   })
 );
@@ -88,9 +114,19 @@ app.get("/", (req, res) => {
   res.send("Server is running");
 });
 
+app.use((error: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  if (error.message === "Origin is not allowed by CORS") {
+    return res.status(403).json({ message: "Origin is not allowed" });
+  }
+  console.error("Unhandled server error", error.name);
+  return res.status(500).json({ message: "Internal server error" });
+});
+
 let cachedConnection: Promise<typeof mongoose> | null = null;
 
 export async function connectToDatabase() {
+  validateEnvironment();
+
   if (!process.env.MONGO_URI) {
     throw new Error("MONGO_URI is not set");
   }
@@ -104,6 +140,11 @@ export async function connectToDatabase() {
   }
 
   return cachedConnection;
+}
+
+export async function disconnectFromDatabase() {
+  cachedConnection = null;
+  await mongoose.disconnect();
 }
 
 export { app };

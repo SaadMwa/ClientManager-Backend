@@ -1,30 +1,35 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose";
 
 export interface IProject extends Document {
   userId: string;
-  clientId: string;
+  clientId: Types.ObjectId;
   name: string;
   estimatedHours: number;
   agreedPrice: number;
   status: "active" | "completed";
+  deadline?: Date | null;
   createdAt: Date;
-  updatedAt: Date;  // 👈 Add this to interface
-  completedAt: Date;
+  updatedAt: Date;
+  completedAt?: Date | null;
 }
 
 const projectSchema = new Schema<IProject>(
   {
     userId: { type: String, required: true },
-    clientId: { type: String, required: true },
+    clientId: { type: Schema.Types.ObjectId, ref: "Client", required: true },
     name: { type: String, required: true, trim: true },
-    estimatedHours: { type: Number, required: true },
-    agreedPrice: { type: Number, required: true },
+    estimatedHours: { type: Number, required: true, min: 0 },
+    agreedPrice: { type: Number, required: true, min: 0 },
     status: { type: String, enum: ["active", "completed"], default: "active" },
-    completedAt: { type: Date, default: null }
+    deadline: { type: Date, default: null },
+    completedAt: { type: Date, default: null },
   },
   {
-    timestamps: true  // 👈 This goes HERE, as a second parameter
+    timestamps: true,
   }
 );
+
+projectSchema.index({ userId: 1, clientId: 1 });
+projectSchema.index({ userId: 1, status: 1, completedAt: 1 });
 
 export default mongoose.model<IProject>("Project", projectSchema);

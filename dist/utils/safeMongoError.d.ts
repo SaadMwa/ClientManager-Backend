@@ -1,0 +1,2 @@
+export declare const classifyMongoError: (error: unknown) => "DNS lookup failed for the MongoDB host. Confirm the Atlas connection string hostname." | "MongoDB authentication failed. Confirm the database username and password." | "MongoDB network access failed. Confirm Atlas Network Access allows this backend environment." | "MONGO_URI is malformed. Copy a fresh driver connection string from MongoDB Atlas." | "MongoDB connection failed. Check backend logs and Atlas status without exposing credentials.";
+//# sourceMappingURL=safeMongoError.d.ts.map

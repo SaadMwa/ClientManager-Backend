@@ -7,6 +7,10 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
+    "test": "npm run build && node --test dist/tests/*.test.js",
+    "db:diagnose": "npm run build && node dist/scripts/mongoDiagnose.js",
+    "db:audit": "npm run build && node dist/scripts/projectDbAudit.js",
+    "db:audit:apply": "npm run build && node dist/scripts/projectDbAudit.js --apply",
     "start": "node dist/server.js",
     "vercel-build": "npm install && npm run build"
   },

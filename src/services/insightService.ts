@@ -51,7 +51,7 @@ if (staleProjects.length > 0) {
        const average = projects.reduce((sum,project) => sum + project.agreedPrice, 0) / projects.length;
         
        clients.forEach(client => {
-         const clientProjects = projects.filter(p => p.clientId === String(client._id)).reduce((sum, p) => sum + p.agreedPrice, 0);
+         const clientProjects = projects.filter(p => p.clientId.toString() === String(client._id)).reduce((sum, p) => sum + p.agreedPrice, 0);
          if (clientProjects < average) {
             insights.push({
                 id: `low-value-client-${client._id}`,
