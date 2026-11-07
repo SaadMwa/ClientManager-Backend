@@ -13,8 +13,8 @@ export const registerUser = async (req, res) => {
         if (!name || !email || !password) {
             return res.status(400).json({ message: "Name, email, and password are required" });
         }
-        if (String(password).length < 6) {
-            return res.status(400).json({ message: "Password must be at least 6 characters long" });
+        if (String(password).length < 8) {
+            return res.status(400).json({ message: "Password must be at least 8 characters long" });
         }
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -100,4 +100,3 @@ export const logout = async (_req, res) => {
         return res.status(500).json({ message: "Logout failed" });
     }
 };
-//# sourceMappingURL=authcontroller.js.map

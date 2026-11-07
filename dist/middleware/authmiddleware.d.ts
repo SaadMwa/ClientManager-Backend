@@ -9,4 +9,3 @@ declare global {
     }
 }
 export declare const protect: (req: Request, res: Response, next: NextFunction) => Response<any, Record<string, any>> | undefined;
-//# sourceMappingURL=authmiddleware.d.ts.map
