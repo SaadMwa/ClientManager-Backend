@@ -12,7 +12,7 @@
     "db:audit": "npm run build && node dist/scripts/projectDbAudit.js",
     "db:audit:apply": "npm run build && node dist/scripts/projectDbAudit.js --apply",
     "start": "node dist/server.js",
-    "vercel-build": "npx tsc && vite build"
+    "vercel-build": "npm install --include=dev && npm run build"
   },
   "keywords": [],
   "author": "",
